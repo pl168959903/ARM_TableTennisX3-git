@@ -11,6 +11,8 @@ AlignAfterOpenBracket: AlwaysBreak
 # 連續賦值時，對齊所有等號
 AlignConsecutiveAssignments: true
 
+AlignConsecutiveMacros: true
+
 # 連續宣告時，對齊所有宣告的變數名稱
 AlignConsecutiveDeclarations: true
 
@@ -36,10 +38,10 @@ AllowShortCaseLabelsOnASingleLine:	false
 AllowShortFunctionsOnASingleLine: Empty
 
 # 允許短的 if 語句保持在同一行
-AllowShortIfStatementsOnASingleLine:	false
+AllowShortIfStatementsOnASingleLine:	true
 
 # 允許短的循環保持在同一行
-AllowShortLoopsOnASingleLine:	false
+AllowShortLoopsOnASingleLine:	true
 
 # 總是在定義返回類型後換行（deprecated）
 AlwaysBreakAfterDefinitionReturnType:	None
@@ -55,10 +57,10 @@ AlwaysBreakBeforeMultilineStrings:	false
 AlwaysBreakTemplateDeclarations: true
 
 # false 表示函數實參要麽都在同一行，要麽都各自一行
-BinPackArguments:	true
+BinPackArguments:	false
 
 # false 表示所有形參要麽都在同一行，要麽都各自一行
-BinPackParameters:	true
+BinPackParameters:	false
 
 # 大括號換行，只有當 BreakBeforeBraces 設置為 Custom 時才有效
 BraceWrapping: 
@@ -109,7 +111,7 @@ ContinuationIndentWidth:	4
 # 去除C++11的列表初始化的大括號{後和}前的空格
 Cpp11BracedListStyle:	false
 # 繼承最常用的指針和引用的對齊方式
-DerivePointerAlignment:	false
+DerivePointerAlignment:	true
 # 關閉格式化
 DisableFormat:	false
 # 自動檢測函數的調用和定義是否被格式為每行一個參數(Experimental)

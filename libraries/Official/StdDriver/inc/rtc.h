@@ -235,5 +235,6 @@ void RTC_GetDateAndTime(S_RTC_TIME_DATA_T *sPt);
 #endif /* __RTC_H__ */
 
 
+
 /*** (C) COPYRIGHT 2015 Nuvoton Technology Corp. ***/
 

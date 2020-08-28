@@ -1,26 +1,27 @@
-.\objects\system_nano103.o: ..\libraries\Official\Device\Nuvoton\Nano103\Source\system_Nano103.c
-.\objects\system_nano103.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
-.\objects\system_nano103.o: ..\libraries\Official\Device\Nuvoton\Nano103\Include\Nano103.h
-.\objects\system_nano103.o: ..\libraries\Official\CMSIS\Include\core_cm0.h
-.\objects\system_nano103.o: ..\libraries\Official\CMSIS\Include\core_cmInstr.h
-.\objects\system_nano103.o: ..\libraries\Official\CMSIS\Include\cmsis_armcc.h
-.\objects\system_nano103.o: ..\libraries\Official\CMSIS\Include\core_cmFunc.h
-.\objects\system_nano103.o: ..\libraries\Official\Device\Nuvoton\Nano103\Include\system_Nano103.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\sys.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\clk.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\acmp.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\adc.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\fmc.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\gpio.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\i2c.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\crc.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\pdma.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\pwm.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\rtc.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\sc.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\scuart.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\spi.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\timer.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\uart.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\wdt.h
-.\objects\system_nano103.o: ..\libraries\Official\StdDriver\inc\wwdt.h
+./objects/system_nano103.o: \
+  ..\libraries\Official\Device\Nuvoton\Nano103\Source\system_Nano103.c \
+  C:\Keil_v5\ARM\ARMCLANG\Bin\..\include\stdint.h \
+  ..\libraries\Official\Device\Nuvoton\Nano103\Include\Nano103.h \
+  ..\libraries\Official\CMSIS\Include\core_cm0.h \
+  ..\libraries\Official\CMSIS\Include\core_cmInstr.h \
+  ..\libraries\Official\CMSIS\Include\cmsis_armcc_V6.h \
+  ..\libraries\Official\CMSIS\Include\core_cmFunc.h \
+  ..\libraries\Official\Device\Nuvoton\Nano103\Include\system_Nano103.h \
+  ..\libraries\Official\StdDriver\inc\sys.h \
+  ..\libraries\Official\StdDriver\inc\clk.h \
+  ..\libraries\Official\StdDriver\inc\acmp.h \
+  ..\libraries\Official\StdDriver\inc\adc.h \
+  ..\libraries\Official\StdDriver\inc\fmc.h \
+  ..\libraries\Official\StdDriver\inc\gpio.h \
+  ..\libraries\Official\StdDriver\inc\i2c.h \
+  ..\libraries\Official\StdDriver\inc\crc.h \
+  ..\libraries\Official\StdDriver\inc\pdma.h \
+  ..\libraries\Official\StdDriver\inc\pwm.h \
+  ..\libraries\Official\StdDriver\inc\rtc.h \
+  ..\libraries\Official\StdDriver\inc\sc.h \
+  ..\libraries\Official\StdDriver\inc\scuart.h \
+  ..\libraries\Official\StdDriver\inc\spi.h \
+  ..\libraries\Official\StdDriver\inc\timer.h \
+  ..\libraries\Official\StdDriver\inc\uart.h \
+  ..\libraries\Official\StdDriver\inc\wdt.h \
+  ..\libraries\Official\StdDriver\inc\wwdt.h

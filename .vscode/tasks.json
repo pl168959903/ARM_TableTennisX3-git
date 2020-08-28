@@ -1,0 +1,30 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "C/C++: armclang.exe build active file",
+			"command": "C:\\Keil_v5\\ARM\\ARMCLANG\\bin\\fromelf.exe",
+			"args": [
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}\\${fileBasenameNoExtension}.exe",
+				"-xc",
+				"-std=gnu11",
+				"--target=arm-arm-none-eabi",
+				"-mcpu=cortex-m0",
+				"-c",
+				"-fno-rtti",
+				"-funsigned-char"
+			],
+			"options": {
+				"cwd": "C:\\Keil_v5\\ARM\\ARMCLANG\\bin"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		}
+	]
+}

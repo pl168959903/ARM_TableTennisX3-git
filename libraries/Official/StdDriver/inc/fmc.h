@@ -34,7 +34,7 @@ extern "C"
 /*---------------------------------------------------------------------------------------------------------*/
 /* Define Base Address                                                                                     */
 /*---------------------------------------------------------------------------------------------------------*/
-#define FMC_APROM_BASE          0x00000000UL	/*!< APROM Base Address          */
+#define FMC_APROM_BASE          0x00000000UL    /*!< APROM Base Address          */
 #define FMC_APROM_END           0x00010000UL    /*!< APROM End Address           */
 #define FMC_LDROM_BASE          0x00100000UL    /*!< LDROM Base Address          */
 #define FMC_LDROM_END           0x00101200UL    /*!< LDROM End Address           */

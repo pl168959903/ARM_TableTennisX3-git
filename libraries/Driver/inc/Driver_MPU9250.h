@@ -8,8 +8,12 @@
 
 #define __DRV_MPU9250_PARAMS() \
     struct {                   \
-        DRV_SPI *spi;          \
-    }
+        uint8_t  div;          \
+        uint8_t  gyroLpf : 3;  \
+        uint8_t  accelLpf : 3; \
+        uint8_t  gyroFs : 2;   \
+        uint8_t  accelFs : 2; \
+}
 
 //****************************************************************
 //參數結構
@@ -21,14 +25,9 @@ typedef struct _DRV_MPU9250_PARAMS {
 //物件結構
 typedef struct _DRV_MPU9250 {
     //參數
-    union {
-        DRV_MPU9250_PARAMS initParams;
-        struct {
-            __DRV_MPU9250_PARAMS();
-        };
-    };
-
     struct {
+        DRV_SPI *spi;
+
         volatile uint8_t WakeOnMotion_Flag : 1;
         volatile uint8_t FifoOverflow_Flag : 1;
         volatile uint8_t Fsync_Flag : 1;
@@ -66,12 +65,12 @@ typedef struct _DRV_MPU9250 {
 
             int16_t Temp;
 
-        } RawData; // RawData
+        } RawData;  // RawData
     } Params;
 
     // 函式
     DRIVER_VERSION ( *GetVersion )( void );
-    void ( *Initialize )( struct _DRV_MPU9250 *self );
+    void ( *Initialize )( struct _DRV_MPU9250 *self , DRV_MPU9250_PARAMS initParams);
     void ( *Deinitialize )( struct _DRV_MPU9250 *self );
     uint8_t ( *ReadRegister )( struct _DRV_MPU9250 *self, uint8_t regAddr, uint8_t *data, uint32_t len );
     void ( *WriteRegister )( struct _DRV_MPU9250 *self, uint8_t regAddr, uint8_t *data, uint32_t len );
@@ -80,7 +79,7 @@ typedef struct _DRV_MPU9250 {
     void ( *I2cMstWriteByte )( struct _DRV_MPU9250 *self, uint8_t i2cSlvAddr, uint8_t i2cAddr, uint8_t regAddr, uint8_t data );
     void ( *I2cSlvDataRead )( struct _DRV_MPU9250 *self, uint8_t slv, uint8_t *data, uint8_t len );
     void ( *I2cMstRead )( struct _DRV_MPU9250 *self, uint8_t slv, uint8_t i2cAddr, uint8_t regAddr, uint8_t *data, uint8_t len );
-    void ( * Updata)(struct _DRV_MPU9250 *self);
+    void ( *Updata )( struct _DRV_MPU9250 *self );
 
     // 事件
     void ( *Event_WakeOnMotion )( struct _DRV_MPU9250 *self );
@@ -94,7 +93,7 @@ typedef struct _DRV_MPU9250 {
 
 //****************************************************************
 //對外函式
-DRV_MPU9250 *  DRV_MPU9250New( DRV_MPU9250_PARAMS param );
+DRV_MPU9250 *  DRV_MPU9250New( DRV_SPI * spi );
 DRIVER_VERSION DRV_MPU9250_GetVersion( void );
 
 //****************************************************************

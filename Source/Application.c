@@ -8,7 +8,7 @@ DRV_SPI *    spi0;
 DRV_MPU9250 *mpu9250;
 
 void MPU9250_Init( void ) {
-    mpu9250 = DRV_MPU9250New( ( DRV_MPU9250_PARAMS ){ spi0 } );
+    mpu9250 = DRV_MPU9250New( spi0 );
 }
 
 void MCU_SysTickDelayUs( uint32_t delayTime ) {
@@ -260,12 +260,9 @@ void GPABC_IRQHandler( void ) {
     uint8_t intStatus = DRV_MPU9250_GET_INT_STATUS( mpu9250 );
     if ( intStatus & _DRV_MPU9250_INT_STATUS_WON_INT_Msk ) mpu9250->Event_WakeOnMotion( mpu9250 );
     if ( intStatus & _DRV_MPU9250_INT_STATUS_FIFO_OVERFLOW_INT_Msk ) mpu9250->Event_FifoOverflow( mpu9250 );
-    if ( intStatus & _DRV_MPU9250_INT_STATUS_FSYNC_INT_INT_Msk ){
-        mpu9250->Event_Fsync( mpu9250 );
-        printf("Fsync : 0x%02X\n", intStatus);
-    }
+    if ( intStatus & _DRV_MPU9250_INT_STATUS_FSYNC_INT_INT_Msk ) mpu9250->Event_Fsync( mpu9250 );
     if ( intStatus & _DRV_MPU9250_INT_STATUS_RAW_RDY_INT_Msk ) mpu9250->Event_RawDataReady( mpu9250 );
-    mpuFlag = 1;
+
     GPIO_CLR_INT_FLAG( _GET_GPIO_PORT( _ICM_INT1_PIN ), _MASK( _GET_GPIO_PIN( _ICM_INT1_PIN ) ) );
 }
 void GPDEF_IRQHandler( void ) {

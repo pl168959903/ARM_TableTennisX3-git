@@ -4,7 +4,7 @@
 // DRV版本號
 #define DRIVER_MPU9250_DRV_VERSION DRIVER_VERSION_MAIJOR_MINOR( 1, 00 )
 
-#define __MPU9250_SPI self->spi
+#define __MPU9250_SPI self->Params.spi
 
 /**
  * @brief  取得版本號
@@ -67,7 +67,22 @@ static void WriteRegister( DRV_MPU9250 *self, uint8_t regAddr, uint8_t *data, ui
  * @param  *self: this指標
  * @retval None
  */
-static void Initialize( DRV_MPU9250 *self ) {}
+static void Initialize( DRV_MPU9250 *self, DRV_MPU9250_PARAMS initParams ) {
+    DRV_MPU9250_USE_PLL( self );
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_PWR_MGMT_1, 0x01 );  // PLL
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_SMPLRT_DIV, initParams.div );
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_MPU_CONFIG, initParams.gyroLpf );
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_GYRO_CONFIG, initParams.gyroFs << _DRV_MPU9250_GYRO_CONFIG_GYRO_FS_SEL_Pos );
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_ACCEL_CONFIG, initParams.accelFs << _DRV_MPU9250_ACCEL_CONFIG_ACCEL_FS_SEL_Pos );
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_ACCEL_CONFIG2, initParams.accelLpf );
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_I2C_MST_CTRL, _DRV_MPU9250_I2C_MST_CTRL_WAIT_FOR_ES_Msk | _DRV_MPU9250_I2C_MST_CLK_400K );
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_USER_CTRL, _DRV_MPU9250_USER_CTRL_I2C_MST_EN_Msk );
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_INT_PIN_CFG, _DRV_MPU9250_INT_PIN_CFG_ACTL_Msk | _DRV_MPU9250_INT_PIN_CFG_OPEN_Msk );
+    DRV_MPU9250_WRITE_BYTE( self, _DRV_MPU9250_INT_ENABLE, _DRV_MPU9250_INT_ENABLE_RAW_RDY_EN_Msk );
+
+    self->I2cMstWriteByte( self, _DRV_MPU9250_I2C_SLV0, _DRV_AK8963_ADDRESS, _DRV_AK8963_CNTL, 0x16 );
+    self->I2cMstRead( self, _DRV_MPU9250_I2C_SLV0, _DRV_AK8963_ADDRESS, _DRV_AK8963_XOUT_L, NULL, 7 );
+}
 
 /**
  * @brief  取消初始化
@@ -212,6 +227,12 @@ static void Event_Fsync( DRV_MPU9250 *self ) {
 }
 static void Event_RawDataReady( DRV_MPU9250 *self ) {
     self->Params.RawDataReady_Flag = 1;
+    self->Updata( self );
+
+    printf( "Accel X:%4d Y:%4d Z:%4d  ", self->Params.RawData.Accel.X, self->Params.RawData.Accel.Y, self->Params.RawData.Accel.Z );
+    printf( "Gyro X:%4d Y:%4d Z:%4d  ", self->Params.RawData.Gyro.X, self->Params.RawData.Gyro.Y, self->Params.RawData.Gyro.Z );
+    printf( "Mag X:%4d Y:%4d Z:%4d  ", self->Params.RawData.Mag.X, self->Params.RawData.Mag.Y, self->Params.RawData.Mag.Z );
+    printf( "Temp %4d\n", self->Params.RawData.Temp );
 }
 
 /**
@@ -231,11 +252,11 @@ static void DRV_MPU9250Free( DRV_MPU9250 *self ) {
  * @param  param : 物件參數結構
  * @retval 物件指標
  */
-DRV_MPU9250 *DRV_MPU9250New( DRV_MPU9250_PARAMS params ) {
+DRV_MPU9250 *DRV_MPU9250New( DRV_SPI *spi ) {
 
     //初始化
-    DRV_MPU9250 *self = _DRV_MACCLOC( sizeof( DRV_MPU9250 ) );                //建立物件&分配記憶體
-    _DRV_MEMCPY( &( self->initParams ), &params, sizeof( DRV_SPI_PARAMS ) );  //參數Copy
+    DRV_MPU9250 *self = _DRV_MACCLOC( sizeof( DRV_MPU9250 ) );  //建立物件&分配記憶體
+    self->Params.spi  = spi;
 
     //函示
     self->GetVersion      = DRV_MPU9250_GetVersion;
@@ -248,7 +269,7 @@ DRV_MPU9250 *DRV_MPU9250New( DRV_MPU9250_PARAMS params ) {
     self->I2cMstWriteByte = I2cMstWriteByte;
     self->I2cSlvDataRead  = I2cSlvDataRead;
     self->I2cMstRead      = I2cMstRead;
-    self->Updata = Updata;
+    self->Updata          = Updata;
 
     // 事件
     self->Event_WakeOnMotion = Event_WakeOnMotion;

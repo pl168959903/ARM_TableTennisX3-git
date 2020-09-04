@@ -40,11 +40,6 @@ static void Initialize( DRV_SPI* self ) {
     else if ( self->mode == 3 )
         mode = SPI_MODE_3;
 
-    if ( __SELF_BASE == SPI0 ) CLK_EnableModuleClock( SPI0_MODULE );
-    if ( __SELF_BASE == SPI1 ) CLK_EnableModuleClock( SPI1_MODULE );
-    if ( __SELF_BASE == SPI2 ) CLK_EnableModuleClock( SPI2_MODULE );
-    if ( __SELF_BASE == SPI3 ) CLK_EnableModuleClock( SPI3_MODULE );
-
     SPI_Open( __SELF_BASE, masterSlave, mode, self->dataWidth, self->busClock );
 }
 

@@ -10,6 +10,7 @@ void MCU_Init( void ){
     MCU_UartInit();
     MCU_SpiInit();
     MCU_NvicInit();
+    MCU_AdcInit();
     // -------------------------------
-    SYS_LockReg();
+    //SYS_LockReg();
 }

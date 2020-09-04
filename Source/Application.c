@@ -6,11 +6,16 @@
 
 DRV_SPI *    spi0;
 DRV_MPU9250 *mpu9250;
+DRV_ADC * adc;
+uint32_t     adcTemp = 0;
 
 void MPU9250_Init( void ) {
     mpu9250 = DRV_MPU9250New( spi0 );
+    DRV_MPU9250_RESET( mpu9250 );
+    DelayUs( 100000 );
+    GPIO_EnableInt( _GET_GPIO_PORT( _ICM_INT1_PIN ), _GET_GPIO_PIN( _ICM_INT1_PIN ), GPIO_INT_FALLING );
+    mpu9250->Initialize( mpu9250, ( DRV_MPU9250_PARAMS ){ 24, 4, 4, 3, 3 } );
 }
-
 void MCU_SysTickDelayUs( uint32_t delayTime ) {
     uint32_t tempLoad = SysTick->LOAD;
     uint32_t tempCtrl = SysTick->CTRL;
@@ -147,8 +152,6 @@ void MCU_GpioInit( void ) {
     _NRF_CE_PIN   = 0;
     _POWER_PIN    = 0;
     _ICM_FYNC_PIN = 0;
-
-    // GPIO External interrupt;
 }
 void MCU_ClkInit( void ) {
     //----------------------------------------------------------------
@@ -223,11 +226,50 @@ void MCU_RtcInit( S_RTC_TIME_DATA_T *sPt ) {
     RTC_32KCalibration( _RTC_CALIBRATION );  // 328660000
 }
 void MCU_SpiInit( void ) {
+    CLK_SetModuleClock( SPI0_MODULE, CLK_CLKSEL1_SPI0SEL_HCLK, NULL );
+    CLK_EnableModuleClock( SPI0_MODULE );
     spi0 = DRV_SpiNew( ( DRV_SPI_PARAMS ){ SPI0, 0, 3, 8, 1000000 } );
     spi0->Initialize( spi0 );
 }
+void MCU_AdcInit( void ) {
+    
+    CLK_SetModuleClock( ADC_MODULE, CLK_CLKSEL1_ADCSEL_HCLK, CLK_ADC_CLK_DIVIDER( 1 ) );
+    CLK_EnableModuleClock( ADC_MODULE );
+
+    NVIC_EnableIRQ( ADC_IRQn );
+    
+    SYS->IVREFCTL |= SYS_IVREFCTL_EXTMODE_Msk | SYS_IVREFCTL_SEL25_Msk | SYS_IVREFCTL_REGEN_Msk | SYS_IVREFCTL_BGPEN_Msk;
+    // ADC_SET_REF_VOLTAGE( ADC, ADC_REFSEL_INT_VREF );
+    // ADC_SetExtraSampleTime( ADC, 0, 4 );
+    // ADC_SetExtraSampleTime( ADC, 1, 4 );
+    // ADC_SetExtraSampleTime( ADC, 2, 4 );
+    // ADC_SetExtraSampleTime( ADC, 3, 4 );
+    // ADC_SetExtraSampleTime( ADC, 4, 4 );
+    // ADC_SetExtraSampleTime( ADC, 5, 4 );
+    // ADC_SetExtraSampleTime( ADC, 6, 4 );
+    // ADC_SetExtraSampleTime( ADC, 7, 4 );
+    // ADC_Open( ADC, ADC_INPUT_MODE_SINGLE_END, ADC_OPERATION_MODE_CONTINUOUS, 0xFF );
+    // ADC_POWER_ON( ADC );
+    // ADC_EnableInt( ADC, ADC_ADF_INT );
+    // ADC_START_CONV( adc );
+    
+   
+   adc = DRV_AdcNew();
+   adc->Initialize(adc, (DRV_ADC_PARAMS){ADC, ADC_RESSEL_12_BIT, ADC_REFSEL_INT_VREF, ADC_INPUT_MODE_SINGLE_END, ADC_OPERATION_MODE_CONTINUOUS});
+   adc->ChannelEnable(adc,0, 5);
+   adc->ChannelEnable(adc,1, 5);
+   adc->ChannelEnable(adc,2, 5);
+   adc->ChannelEnable(adc,3, 5);
+   adc->ChannelEnable(adc,4, 5);
+   adc->ChannelEnable(adc,5, 5);
+   adc->ChannelEnable(adc,6, 5);
+   adc->ChannelEnable(adc,7, 5);
+   adc->Conversion(adc);
+   
+}
 void MCU_NvicInit( void ) {
     NVIC_EnableIRQ( GPABC_IRQn );
+    // NVIC_EnableIRQ( ADC_IRQn );
 }
 // ------------------------------------------------
 // Function
@@ -357,3 +399,13 @@ void HIRC_IRQHandler( void ) {
     }
 }
 void SysTick_Handler( void ) {}
+void ADC_IRQHandler( void ) {
+    uint32_t status = ADC->STATUS;
+    if ( status & ADC_STATUS_ADIF_Msk ) {
+        adcTemp += 1;
+        adc->Event_AdcConverted(adc);
+        ADC_CLR_INT_FLAG( ADC, ADC_ADF_INT );
+    }
+    if ( status & ADC_STATUS_ADCMPF0_Msk ) { ADC_CLR_INT_FLAG( ADC, ADC_CMP0_INT ); }
+    if ( status & ADC_STATUS_ADCMPF1_Msk ) { ADC_CLR_INT_FLAG( ADC, ADC_CMP1_INT ); }
+}

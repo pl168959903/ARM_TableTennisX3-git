@@ -62,6 +62,7 @@
 #include "Nano103.h"
 #include "Driver_MCU_SPI.h"
 #include "Driver_MPU9250.h"
+#include "Driver_ADC.h"
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -76,6 +77,8 @@ void MCU_UartInit( void );
 void MCU_SpiInit( void );
 void MCU_RtcInit( S_RTC_TIME_DATA_T *sPt );
 void MCU_NvicInit( void );
+void MCU_AdcInit(void);
+void MCU_SysTickDelayUs( uint32_t delayTime );
 void DelayUs( uint32_t delayTime );
 void PrintClockStatus( void );
 
@@ -89,4 +92,5 @@ void MCU_Init(void);
 //-----------------------------------------------------------------
 extern DRV_SPI * spi0;
 extern DRV_MPU9250 * mpu9250;
-extern volatile uint8_t mpuFlag;
+extern DRV_ADC * adc;
+extern uint32_t adcTemp;

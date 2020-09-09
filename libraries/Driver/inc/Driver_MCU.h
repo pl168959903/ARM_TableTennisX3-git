@@ -5,6 +5,7 @@
 #define DRIVER_USE_VMEMALLOC true
 
 #define DRIVER_VERSION_MAIJOR_MINOR( major, minor ) ( ( major << 8 ) | minor )
+#define _FUNCTION_POINTER_LINK( func ) self->func = func
 
 #include <stdbool.h>
 #include <stdint.h>

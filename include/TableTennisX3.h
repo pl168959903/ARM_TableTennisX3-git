@@ -1,3 +1,6 @@
+#ifndef __TABLE_TENNIS_X3_H
+#define __TABLE_TENNIS_X3_H
+
 // Define
 //----------------------------------------------------------------
 
@@ -62,7 +65,9 @@
 #include "Nano103.h"
 #include "Driver_MCU_SPI.h"
 #include "Driver_MPU9250.h"
+#include "Driver_nRF24L01P.h"
 #include "Driver_ADC.h"
+#include "Driver_Pressure.h"
 #include <stdbool.h>
 #include <stdio.h>
 
@@ -85,12 +90,20 @@ void PrintClockStatus( void );
 //MPU9250
 void MPU9250_Init(void);
 
+//nRF24L01P
+void NRF_Init(void);
+
 //----------------------------------------------------------------
 // boot.c
 void MCU_Init(void);
 
 //-----------------------------------------------------------------
 extern DRV_SPI * spi0;
+extern DRV_SPI * spi2;
 extern DRV_MPU9250 * mpu9250;
+extern DRV_NRF *nrf;
 extern DRV_ADC * adc;
+extern DRV_PRESSURE *pre;
 extern uint32_t adcTemp;
+
+#endif /*__TABLE_TENNIS_X3_H */

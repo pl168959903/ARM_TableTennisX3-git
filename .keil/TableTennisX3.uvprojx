@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>7</Optim>
+            <Optim>2</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -329,7 +329,7 @@
             <uGnu>1</uGnu>
             <useXO>0</useXO>
             <v6Lang>6</v6Lang>
-            <v6LangP>7</v6LangP>
+            <v6LangP>3</v6LangP>
             <vShortEn>0</vShortEn>
             <vShortWch>0</vShortWch>
             <v6Lto>0</v6Lto>
@@ -451,9 +451,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Libraries_User</GroupName>
-        </Group>
-        <Group>
           <GroupName>Source</GroupName>
           <Files>
             <File>
@@ -495,6 +492,11 @@
               <FileName>Driver_ADC.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\libraries\Driver\src\Driver_ADC.c</FilePath>
+            </File>
+            <File>
+              <FileName>Driver_nRF24L01P.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\libraries\Driver\src\Driver_nRF24L01P.c</FilePath>
             </File>
           </Files>
         </Group>

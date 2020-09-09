@@ -229,12 +229,10 @@ static void Event_RawDataReady( DRV_MPU9250 *self ) {
     self->Params.RawDataReady_Flag = 1;
     self->Updata( self );
 
-    /*
-    printf( "Accel X:%4d Y:%4d Z:%4d  ", self->Params.RawData.Accel.X, self->Params.RawData.Accel.Y, self->Params.RawData.Accel.Z );
-    printf( "Gyro X:%4d Y:%4d Z:%4d  ", self->Params.RawData.Gyro.X, self->Params.RawData.Gyro.Y, self->Params.RawData.Gyro.Z );
-    printf( "Mag X:%4d Y:%4d Z:%4d  ", self->Params.RawData.Mag.X, self->Params.RawData.Mag.Y, self->Params.RawData.Mag.Z );
-    printf( "Temp %4d\n", self->Params.RawData.Temp );
-    */
+    // printf( "Accel X:%4d Y:%4d Z:%4d  ", self->Params.RawData.Accel.X, self->Params.RawData.Accel.Y, self->Params.RawData.Accel.Z );
+    // printf( "Gyro X:%4d Y:%4d Z:%4d  ", self->Params.RawData.Gyro.X, self->Params.RawData.Gyro.Y, self->Params.RawData.Gyro.Z );
+    // printf( "Mag X:%4d Y:%4d Z:%4d  ", self->Params.RawData.Mag.X, self->Params.RawData.Mag.Y, self->Params.RawData.Mag.Z );
+    // printf( "Temp %4d\n", self->Params.RawData.Temp );
 }
 
 /**

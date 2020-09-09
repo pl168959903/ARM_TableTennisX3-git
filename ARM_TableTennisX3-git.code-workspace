@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"algorithm": "c",
+			"string": "c",
+			"array": "c",
+			"iterator": "c",
+			"string_view": "c",
+			"vector": "c",
+			"__string": "c",
+			"__tuple": "cpp"
+		}
+	}
+}

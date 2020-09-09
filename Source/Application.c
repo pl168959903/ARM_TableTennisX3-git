@@ -4,11 +4,25 @@
 
 //**************************************************************
 
-DRV_SPI *    spi0;
-DRV_MPU9250 *mpu9250;
-DRV_ADC * adc;
-uint32_t     adcTemp = 0;
+DRV_SPI *     spi0;
+DRV_SPI *     spi2;
+DRV_MPU9250 * mpu9250;
+DRV_NRF *     nrf;
+DRV_ADC *     adc;
+DRV_PRESSURE *pre;
+uint32_t      adcTemp = 0;
 
+void NRF_SetCE( uint8_t en ) {
+    if ( en ) { _NRF_CE_PIN = 1; }
+    else {
+        _NRF_CE_PIN = 0;
+    }
+}
+void NRF_Init( void ) {
+    nrf = DRV_nrfNew();
+    nrf->Initialize( nrf, ( DRV_NRF_PARAMS ){ spi2, NRF_SetCE, 60, 3, 1, 3, 15, 15 } );
+    GPIO_EnableInt( _GET_GPIO_PORT( _NRF_INT0_PIN ), _GET_GPIO_PIN( _NRF_INT0_PIN ), GPIO_INT_FALLING );
+}
 void MPU9250_Init( void ) {
     mpu9250 = DRV_MPU9250New( spi0 );
     DRV_MPU9250_RESET( mpu9250 );
@@ -72,7 +86,8 @@ void MCU_PinInit( void ) {
         ( SYS_GPB_MFPH_PB8MFP_GPIO |       // useless
           SYS_GPB_MFPH_PB9MFP_GPIO |       // useless
           SYS_GPB_MFPH_PB10MFP_GPIO |      // useless
-          SYS_GPB_MFPH_PB11MFP_PWM0_CH4 |  //
+          //SYS_GPB_MFPH_PB11MFP_PWM0_CH4 |  //
+          SYS_GPB_MFPH_PB11MFP_GPIO |  //
           SYS_GPB_MFPH_PB13MFP_GPIO |      // useless
           SYS_GPB_MFPH_PB14MFP_GPIO |      //
           SYS_GPB_MFPH_PB15MFP_GPIO        //
@@ -143,6 +158,8 @@ void MCU_GpioInit( void ) {
     GPIO_SetMode( _GET_GPIO_PORT( _POWER_PIN ), _MASK( _GET_GPIO_PIN( _POWER_PIN ) ), GPIO_PMD_OUTPUT );
     GPIO_SetMode( _GET_GPIO_PORT( _ICM_FYNC_PIN ), _MASK( _GET_GPIO_PIN( _ICM_FYNC_PIN ) ), GPIO_PMD_OUTPUT );
 
+    GPIO_SetMode( _GET_GPIO_PORT( _LED_B_PWM_PIN ), _MASK( _GET_GPIO_PIN( _LED_B_PWM_PIN ) ), GPIO_PMD_OUTPUT );
+
     // pull up
     GPIO_ENABLE_PULL_UP( _GET_GPIO_PORT( _BAT_CHRG_PIN ), _MASK( _GET_GPIO_PIN( _BAT_CHRG_PIN ) ) );
     GPIO_ENABLE_PULL_UP( _GET_GPIO_PORT( _BAT_STDBY_PIN ), _MASK( _GET_GPIO_PIN( _BAT_STDBY_PIN ) ) );
@@ -152,6 +169,7 @@ void MCU_GpioInit( void ) {
     _NRF_CE_PIN   = 0;
     _POWER_PIN    = 0;
     _ICM_FYNC_PIN = 0;
+    _LED_B_PWM_PIN = 1;
 }
 void MCU_ClkInit( void ) {
     //----------------------------------------------------------------
@@ -230,46 +248,44 @@ void MCU_SpiInit( void ) {
     CLK_EnableModuleClock( SPI0_MODULE );
     spi0 = DRV_SpiNew( ( DRV_SPI_PARAMS ){ SPI0, 0, 3, 8, 1000000 } );
     spi0->Initialize( spi0 );
+
+    CLK_SetModuleClock( SPI2_MODULE, CLK_CLKSEL1_SPI2SEL_HCLK, NULL );
+    CLK_EnableModuleClock( SPI2_MODULE );
+    spi2 = DRV_SpiNew( ( DRV_SPI_PARAMS ){ SPI2, 0, 0, 8, 1000000 } );
+    spi2->Initialize( spi2 );
 }
 void MCU_AdcInit( void ) {
-    
+
     CLK_SetModuleClock( ADC_MODULE, CLK_CLKSEL1_ADCSEL_HCLK, CLK_ADC_CLK_DIVIDER( 1 ) );
     CLK_EnableModuleClock( ADC_MODULE );
 
-    NVIC_EnableIRQ( ADC_IRQn );
-    
     SYS->IVREFCTL |= SYS_IVREFCTL_EXTMODE_Msk | SYS_IVREFCTL_SEL25_Msk | SYS_IVREFCTL_REGEN_Msk | SYS_IVREFCTL_BGPEN_Msk;
-    // ADC_SET_REF_VOLTAGE( ADC, ADC_REFSEL_INT_VREF );
-    // ADC_SetExtraSampleTime( ADC, 0, 4 );
-    // ADC_SetExtraSampleTime( ADC, 1, 4 );
-    // ADC_SetExtraSampleTime( ADC, 2, 4 );
-    // ADC_SetExtraSampleTime( ADC, 3, 4 );
-    // ADC_SetExtraSampleTime( ADC, 4, 4 );
-    // ADC_SetExtraSampleTime( ADC, 5, 4 );
-    // ADC_SetExtraSampleTime( ADC, 6, 4 );
-    // ADC_SetExtraSampleTime( ADC, 7, 4 );
-    // ADC_Open( ADC, ADC_INPUT_MODE_SINGLE_END, ADC_OPERATION_MODE_CONTINUOUS, 0xFF );
-    // ADC_POWER_ON( ADC );
-    // ADC_EnableInt( ADC, ADC_ADF_INT );
-    // ADC_START_CONV( adc );
-    
-   
-   adc = DRV_AdcNew();
-   adc->Initialize(adc, (DRV_ADC_PARAMS){ADC, ADC_RESSEL_12_BIT, ADC_REFSEL_INT_VREF, ADC_INPUT_MODE_SINGLE_END, ADC_OPERATION_MODE_CONTINUOUS});
-   adc->ChannelEnable(adc,0, 5);
-   adc->ChannelEnable(adc,1, 5);
-   adc->ChannelEnable(adc,2, 5);
-   adc->ChannelEnable(adc,3, 5);
-   adc->ChannelEnable(adc,4, 5);
-   adc->ChannelEnable(adc,5, 5);
-   adc->ChannelEnable(adc,6, 5);
-   adc->ChannelEnable(adc,7, 5);
-   adc->Conversion(adc);
-   
+
+    adc = DRV_AdcNew();
+    adc->Initialize( adc, ( DRV_ADC_PARAMS ){ ADC, ADC_RESSEL_12_BIT, ADC_REFSEL_INT_VREF, ADC_INPUT_MODE_SINGLE_END, ADC_OPERATION_MODE_CONTINUOUS } );
+    adc->ChannelEnable( adc, 0, 9 );
+    adc->ChannelEnable( adc, 1, 9 );
+    adc->ChannelEnable( adc, 2, 9 );
+    adc->ChannelEnable( adc, 3, 9 );
+    adc->ChannelEnable( adc, 4, 9 );
+    adc->ChannelEnable( adc, 5, 9 );
+    adc->ChannelEnable( adc, 6, 9 );
+    adc->ChannelEnable( adc, 7, 9 );
+    adc->Conversion( adc );
+
+    pre = DRV_PressureNew( ( DRV_PRESSURE_PARAMS ){ adc } );
+    pre->SetChannel( pre, 0, 0, 0, 2600, 2500 );
+    pre->SetChannel( pre, 1, 1, 0, 2600, 2500 );
+    pre->SetChannel( pre, 2, 2, 0, 2600, 2500 );
+    pre->SetChannel( pre, 3, 3, 0, 2600, 2500 );
+    pre->SetChannel( pre, 4, 4, 0, 2600, 2500 );
+    pre->SetChannel( pre, 5, 5, 0, 2600, 2500 );
+    pre->SetChannel( pre, 6, 6, 0, 2600, 2500 );
+    pre->SetChannel( pre, 7, 7, 0, 2600, 2500 );
 }
 void MCU_NvicInit( void ) {
     NVIC_EnableIRQ( GPABC_IRQn );
-    // NVIC_EnableIRQ( ADC_IRQn );
+    NVIC_EnableIRQ( ADC_IRQn );
 }
 // ------------------------------------------------
 // Function
@@ -299,13 +315,22 @@ void PrintClockStatus( void ) {
 // ------------------------------------------------
 // IRQHandler
 void GPABC_IRQHandler( void ) {
-    uint8_t intStatus = DRV_MPU9250_GET_INT_STATUS( mpu9250 );
-    if ( intStatus & _DRV_MPU9250_INT_STATUS_WON_INT_Msk ) mpu9250->Event_WakeOnMotion( mpu9250 );
-    if ( intStatus & _DRV_MPU9250_INT_STATUS_FIFO_OVERFLOW_INT_Msk ) mpu9250->Event_FifoOverflow( mpu9250 );
-    if ( intStatus & _DRV_MPU9250_INT_STATUS_FSYNC_INT_INT_Msk ) mpu9250->Event_Fsync( mpu9250 );
-    if ( intStatus & _DRV_MPU9250_INT_STATUS_RAW_RDY_INT_Msk ) mpu9250->Event_RawDataReady( mpu9250 );
+    if ( GPIO_GET_INT_FLAG( _GET_GPIO_PORT( _ICM_INT1_PIN ), _MASK( _GET_GPIO_PIN( _ICM_INT1_PIN ) ) ) ) {
+        uint8_t intStatus = DRV_MPU9250_GET_INT_STATUS( mpu9250 );
+        if ( intStatus & _DRV_MPU9250_INT_STATUS_WON_INT_Msk ) mpu9250->Event_WakeOnMotion( mpu9250 );
+        if ( intStatus & _DRV_MPU9250_INT_STATUS_FIFO_OVERFLOW_INT_Msk ) mpu9250->Event_FifoOverflow( mpu9250 );
+        if ( intStatus & _DRV_MPU9250_INT_STATUS_FSYNC_INT_INT_Msk ) mpu9250->Event_Fsync( mpu9250 );
+        if ( intStatus & _DRV_MPU9250_INT_STATUS_RAW_RDY_INT_Msk ) mpu9250->Event_RawDataReady( mpu9250 );
 
-    GPIO_CLR_INT_FLAG( _GET_GPIO_PORT( _ICM_INT1_PIN ), _MASK( _GET_GPIO_PIN( _ICM_INT1_PIN ) ) );
+        GPIO_CLR_INT_FLAG( _GET_GPIO_PORT( _ICM_INT1_PIN ), _MASK( _GET_GPIO_PIN( _ICM_INT1_PIN ) ) );
+    }
+    if ( GPIO_GET_INT_FLAG( _GET_GPIO_PORT( _NRF_INT0_PIN ), _MASK( _GET_GPIO_PIN( _NRF_INT0_PIN ) ) ) ) {
+        uint8_t intStatus = DRV_NRF_NOP( nrf );
+        if ( intStatus & _DRV_NRF_REG_STATUS_TX_DS_MSK ) nrf->Event_TX_DS( nrf );
+        if ( intStatus & _DRV_NRF_REG_STATUS_RX_DR_MSK ) nrf->Event_RX_DR( nrf );
+        if ( intStatus & _DRV_NRF_REG_STATUS_MAX_RT_MSK ) nrf->Event_MAX_RT( nrf );
+        GPIO_CLR_INT_FLAG( _GET_GPIO_PORT( _NRF_INT0_PIN ), _MASK( _GET_GPIO_PIN( _NRF_INT0_PIN ) ) );
+    }
 }
 void GPDEF_IRQHandler( void ) {
     if ( GPIO_GET_INT_FLAG( _GET_GPIO_PORT( _KEY0_PIN ), _MASK( _GET_GPIO_PIN( _KEY0_PIN ) ) ) ) {
@@ -398,12 +423,26 @@ void HIRC_IRQHandler( void ) {
         SYS_CLEAR_MIRCTRIM_INT_FLAG( mircFlag );
     }
 }
-void SysTick_Handler( void ) {}
+void SysTick_Handler( void ) {
+    static uint32_t powerDoneCounter = 0;
+    if(_POWER_PIN == 1){
+        if(_KEY0_PIN == 0){
+            if(powerDoneCounter++ > 15){
+                _POWER_PIN = 0;
+                _LED_B_PWM_PIN = 1;
+            }
+        }
+        else{
+            powerDoneCounter = 0;
+        }
+    }
+}
 void ADC_IRQHandler( void ) {
     uint32_t status = ADC->STATUS;
     if ( status & ADC_STATUS_ADIF_Msk ) {
         adcTemp += 1;
-        adc->Event_AdcConverted(adc);
+        adc->Event_AdcConverted( adc );
+        pre->Update( pre );
         ADC_CLR_INT_FLAG( ADC, ADC_ADF_INT );
     }
     if ( status & ADC_STATUS_ADCMPF0_Msk ) { ADC_CLR_INT_FLAG( ADC, ADC_CMP0_INT ); }

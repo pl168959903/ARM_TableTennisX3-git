@@ -49,6 +49,7 @@ int main( void ) {
             for ( i = 0; i < 8; i++ ) {
                 if ( pre->channels[ i ].isCapturing == 0 && pre->channels[ i ].Value.extremum != 0 ) {
                     fsrData[ i ]                      = ( float )( 4096 - ( pre->channels[ i ].Value.extremum ) );
+                    printf( "c:%d v:%d\n",i, fsrData[ i ]);
                     pre->channels[ i ].Value.extremum = 0;
                 }
                 else {

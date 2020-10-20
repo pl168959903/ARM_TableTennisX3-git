@@ -39,6 +39,7 @@ void MCU_SysTickDelayUs( uint32_t delayTime ) {
 }
 void MCU_SysTickInit( float sysTickFrequency ) {
     uint32_t clksrc = CLK_GetHCLKFreq();
+
     if ( ( ( float )clksrc / sysTickFrequency ) > 0xFFFFFF ) {
         SysTick->CTRL &= ~SysTick_CTRL_CLKSOURCE_Msk;
         SysTick->LOAD = ( uint32_t )( ( float )( clksrc >> 3 ) / sysTickFrequency );
@@ -214,7 +215,7 @@ void MCU_ClkInit( void ) {
     while ( !( SYS_GET_MIRCTRIM_INT_FLAG() & SYS_IRCTISTS_FREQLOCK ) ) {};
 
     //----------------------------------------------------------------
-    // Setting BUS clock
+    // Setting BUS clock 
     CLK->CLKSEL0 |= CLK_CLKSEL0_HIRCSEL_Msk;  // Select HIRC clock source from HIRC0.
 
     CLK_SetHCLK( CLK_CLKSEL0_HCLKSEL_HIRC1, CLK_HCLK_CLK_DIVIDER( 1 ) );
@@ -229,6 +230,7 @@ void MCU_ClkInit( void ) {
     CLK->CLKDIE |= 0x7;   // Clock error interrupt enabled.
 }
 void MCU_UartInit( void ) {
+    
 #if _OPEN_DEBUG_PORT
     CLK_SetModuleClock( UART0_MODULE, CLK_CLKSEL1_UART0SEL_HIRC, CLK_UART0_CLK_DIVIDER( 1 ) );
     CLK_EnableModuleClock( UART0_MODULE );
@@ -274,14 +276,14 @@ void MCU_AdcInit( void ) {
     adc->Conversion( adc );
 
     pre = DRV_PressureNew( ( DRV_PRESSURE_PARAMS ){ adc } );
-    pre->SetChannel( pre, 0, 0, 0, 2600, 2500 );
-    pre->SetChannel( pre, 1, 1, 0, 2600, 2500 );
-    pre->SetChannel( pre, 2, 2, 0, 2600, 2500 );
-    pre->SetChannel( pre, 3, 3, 0, 2600, 2500 );
-    pre->SetChannel( pre, 4, 4, 0, 2600, 2500 );
-    pre->SetChannel( pre, 5, 5, 0, 2600, 2500 );
-    pre->SetChannel( pre, 6, 6, 0, 2600, 2500 );
-    pre->SetChannel( pre, 7, 7, 0, 2600, 2500 );
+    pre->SetChannel( pre, 0, 0, 0, 1800, 1500 );
+    pre->SetChannel( pre, 1, 1, 0, 1800, 1500 );
+    pre->SetChannel( pre, 2, 2, 0, 1800, 1500 );
+    pre->SetChannel( pre, 3, 3, 0, 1800, 1500 );
+    pre->SetChannel( pre, 4, 4, 0, 1800, 1500 );
+    pre->SetChannel( pre, 5, 5, 0, 1800, 1500 );
+    pre->SetChannel( pre, 6, 6, 0, 1800, 1500 );
+    pre->SetChannel( pre, 7, 7, 0, 1800, 1500 );
 }
 void MCU_NvicInit( void ) {
     NVIC_EnableIRQ( GPABC_IRQn );

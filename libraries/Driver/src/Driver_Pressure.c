@@ -38,6 +38,7 @@ static void Update( DRV_PRESSURE *self ) {
                 else{
                     // 是否達到開始捕捉條件
                     if(adcValue > self->channels[i].schmittTriggerUpper){
+                        //printf("start catch : %d value : %d\n", i, adcValue);
                         self->channels[i].isCapturing = 1;
                         self->channels[i].Value.extremum = adcValue;
                         self->channels[i].Value.sampleSize = 1;
